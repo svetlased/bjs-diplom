@@ -10,10 +10,8 @@ ApiConnector.current( response => ProfileWidget.showProfile(response.data));
 const currency = new RatesBoard();
 function getCurr(){
     ApiConnector.getStocks( response => {
-    if (response.success) {
         currency.clearTable();
         currency.fillTable(response.data);
-    }
 });
 };
 setInterval(getCurr, 1000);
@@ -23,68 +21,46 @@ setInterval(getCurr, 1000);
 const managment = new MoneyManager();
 managment.addMoneyCallback = data => {
     ApiConnector.addMoney(data, response => {
-        if (response.success){
             ProfileWidget.showProfile(response.data);
-            FavoritesWidget.setMessage(response.success, response.error);
-        } else {
-            FavoritesWidget.setMessage(response.error);
-        }
+            managment.setMessage(response.success, "Баланс пополнен" || response.error);
     })
 }
 //Конвертирование валюты
 managment.conversionMoneyCallback = data => {
     ApiConnector.convertMoney(data, response => {
-        if (response.success){
             ProfileWidget.showProfile(response.data);
-            FavoritesWidget.setMessage(response.success, response.error);
-        } else {
-            FavoritesWidget.setMessage(response.error);
-        }  
+            managment.setMessage(response.success, "Валюта конвертирована" || response.error);
     })
 };
 //перевод средств
 managment.sendMoneyCallback = data => {
     ApiConnector.transferMoney(data, response => {
-        if (response.success){
             ProfileWidget.showProfile(response.data);
-            FavoritesWidget.setMessage(response.success, response.error);
-        } else {
-            FavoritesWidget.setMessage(response.error);
-        }
+            managment.setMessage(response.success, "Средства переведены" || response.error);
     })
 }
 const favorites = new FavoritesWidget();
 //начальный список избранного
-//Таким образом запрос просто выполняется? а не записывается в функцию, что выполняет запрос
-// Как понять, что именно будет в response
     ApiConnector.getFavorites(response => {
-        if (response.success){
-            favorites.clearTable();
-        }
+        favorites.clearTable();
         favorites.fillTable(response.data);
-        favorites.updateUsersList(response.data);
+        managment.updateUsersList(response.data);
 });
 //добавления пользователя в список избранных
 favorites.addUserCallback = data => {
-    ApiConnector.addUserToFavorites(data, response =>{
-        if (response.success){
-            RatesBoard.clearTable();
-        } else {
-            this.setMessage(response.success, response.error);
-        }
-        FavoritesWidget.fillTable(data);
-        MoneyManager.updateUsersList(data);
+    ApiConnector.addUserToFavorites(data, response => {
+        favorites.clearTable();
+        favorites.setMessage(response.success, "Пользователь добавлен в Избранное" || response.error);
+        favorites.fillTable(data);
+        managment.updateUsersList(data);
     });
 }
 //удаление пользователя из избранного
 favorites.removeUserCallback = data => {
     ApiConnector.removeUserFromFavorites(data, response =>{
-        if (response.success){
-            RatesBoard.clearTable();
-        } else {
-            FavoritesWidget.setMessage(response.success, response.error);
-        }
-        RatesBoard.fillTable(data);
-        MoneyManager.updateUsersList(data);
+        favorites.clearTable();
+        favorites.setMessage(response.success, "Пользователь удален из Избранного" || response.error);
+        favorites.fillTable(data);
+        managment.updateUsersList(data);
     });
 }
