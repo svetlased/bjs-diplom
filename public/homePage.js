@@ -22,21 +22,21 @@ const managment = new MoneyManager();
 managment.addMoneyCallback = data => {
     ApiConnector.addMoney(data, response => {
             ProfileWidget.showProfile(response.data);
-            managment.setMessage(response.success, "Баланс пополнен" || response.error);
+            managment.setMessage(response.success, response.error || "Баланс пополнен" );
     })
 }
 //Конвертирование валюты
 managment.conversionMoneyCallback = data => {
     ApiConnector.convertMoney(data, response => {
             ProfileWidget.showProfile(response.data);
-            managment.setMessage(response.success, "Валюта конвертирована" || response.error);
+            managment.setMessage(response.success, response.error || "Валюта конвертирована");
     })
 };
 //перевод средств
 managment.sendMoneyCallback = data => {
     ApiConnector.transferMoney(data, response => {
             ProfileWidget.showProfile(response.data);
-            managment.setMessage(response.success, "Средства переведены" || response.error);
+            managment.setMessage(response.success, response.error || "Средства переведены");
     })
 }
 const favorites = new FavoritesWidget();
@@ -50,7 +50,7 @@ const favorites = new FavoritesWidget();
 favorites.addUserCallback = data => {
     ApiConnector.addUserToFavorites(data, response => {
         favorites.clearTable();
-        favorites.setMessage(response.success, "Пользователь добавлен в Избранное" || response.error);
+        favorites.setMessage(response.success, response.error || "Пользователь добавлен в Избранное");
         favorites.fillTable(data);
         managment.updateUsersList(data);
     });
@@ -59,7 +59,7 @@ favorites.addUserCallback = data => {
 favorites.removeUserCallback = data => {
     ApiConnector.removeUserFromFavorites(data, response =>{
         favorites.clearTable();
-        favorites.setMessage(response.success, "Пользователь удален из Избранного" || response.error);
+        favorites.setMessage(response.success, response.error || "Пользователь удален из Избранного");
         favorites.fillTable(data);
         managment.updateUsersList(data);
     });
